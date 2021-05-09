@@ -54,7 +54,13 @@ func GetUserId(request *http.Request) int64 {
 	if request == nil {
 		return 0
 	}
-	return 0
+
+	userId, err := strconv.ParseInt(request.Header.Get(headerXUserId), 10, 64)
+	if err != nil {
+		return 0
+	}
+
+	return userId
 }
 
 func AuthenticateRequest(request *http.Request) *errors.RESTErr {
