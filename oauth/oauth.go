@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/aditya43/bookstore-oauth-go/oauth/errors"
@@ -34,6 +35,26 @@ func IsPublic(request *http.Request) bool {
 		return true
 	}
 	return request.Header.Get(headerXPublic) == "true"
+}
+
+func GetClientId(request *http.Request) int64 {
+	if request == nil {
+		return 0
+	}
+
+	callerId, err := strconv.ParseInt(request.Header.Get(headerXClientId), 10, 64)
+	if err != nil {
+		return 0
+	}
+
+	return callerId
+}
+
+func GetUserId(request *http.Request) int64 {
+	if request == nil {
+		return 0
+	}
+	return 0
 }
 
 func AuthenticateRequest(request *http.Request) *errors.RESTErr {
