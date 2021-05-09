@@ -1,18 +1,40 @@
 package oauth
 
-import "net/http"
+import (
+	"net/http"
+	"strings"
 
-const (
-	headerXPublic = "X-Public"
+	"github.com/aditya43/bookstore-oauth-go/oauth/errors"
 )
 
-type oauthClient struct{}
+const (
+	headerXPublic   = "X-Public"
+	headerXClientId = "X-Client-Id"
+	headerXUserId   = "X-User-Id"
 
-type oauthInterface interface{}
+	paramAccessToken = "access_token"
+)
+
+type accessToken struct {
+	Id       string `json:"id"`
+	UserId   string `json:"user_id"`
+	ClientId string `json:"client_id"`
+}
 
 func IsPublic(request *http.Request) bool {
 	if request == nil {
 		return true
 	}
 	return request.Header.Get(headerXPublic) == "true"
+}
+
+func AuthenticateRequest(request *http.Request) *errors.RESTErr {
+	if request == nil {
+		return nil
+	}
+
+	accessToken := strings.TrimSpace(request.URL.Query().Get(paramAccessToken))
+	if accessToken == "" {
+		return nil
+	}
 }
