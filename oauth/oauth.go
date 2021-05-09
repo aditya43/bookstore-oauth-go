@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/aditya43/bookstore-oauth-go/oauth/errors"
+	"github.com/go-resty/resty/v2"
 )
 
 const (
@@ -13,6 +14,11 @@ const (
 	headerXUserId   = "X-User-Id"
 
 	paramAccessToken = "access_token"
+)
+
+var (
+	restClient           = resty.New()
+	userLoginAPIEndpoint = "http://localhost:8080/users/login"
 )
 
 type accessToken struct {
