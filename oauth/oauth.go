@@ -41,11 +41,27 @@ func AuthenticateRequest(request *http.Request) *errors.RESTErr {
 		return nil
 	}
 
-	accessToken := strings.TrimSpace(request.URL.Query().Get(paramAccessToken))
-	if accessToken == "" {
+	cleanRequest(request)
+	accessTokenId := strings.TrimSpace(request.URL.Query().Get(paramAccessToken))
+	if accessTokenId == "" {
 		return nil
 	}
+
+	at, err := getAccessToken(accessTokenId)
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func cleanRequest(request *http.Request) {
+	if request == nil {
+		return
+	}
+
+	request.Header.Del(headerXClientId)
+	request.Header.Del(headerXUserId)
 }
 
 func getAccessToken(accessTokenId string) (*accessToken, *errors.RESTErr) {
