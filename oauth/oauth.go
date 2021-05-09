@@ -1,6 +1,8 @@
 package oauth
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -17,8 +19,8 @@ const (
 )
 
 var (
-	restClient           = resty.New()
-	userLoginAPIEndpoint = "http://localhost:8080/users/login"
+	restClient             = resty.New()
+	getAccessTokenEndpoint = "http://localhost:8080/oauth/access_token/%s"
 )
 
 type accessToken struct {
@@ -43,4 +45,30 @@ func AuthenticateRequest(request *http.Request) *errors.RESTErr {
 	if accessToken == "" {
 		return nil
 	}
+	return nil
+}
+
+func getAccessToken(accessTokenId string) (*accessToken, *errors.RESTErr) {
+	var at accessToken
+	response, err := restClient.R().
+		SetResult(&at).
+		Get(fmt.Sprintf(getAccessTokenEndpoint, accessTokenId))
+
+	if response == nil || err != nil {
+		if strings.Contains(err.Error(), "cannot unmarshal") {
+			return nil, errors.InternalServerErr("Invalid JSON response received")
+		}
+		return nil, errors.InternalServerErr(err.Error())
+	}
+
+	if response.StatusCode() == 200 && at.ClientId != "" {
+		return &at, nil
+	}
+
+	var restErr errors.RESTErr
+	if err := json.Unmarshal(response.Body(), &restErr); err != nil {
+		return nil, errors.InternalServerErr("Invalid error interface")
+	}
+
+	return nil, &restErr
 }
