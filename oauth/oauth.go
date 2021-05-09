@@ -42,12 +42,12 @@ func GetClientId(request *http.Request) int64 {
 		return 0
 	}
 
-	callerId, err := strconv.ParseInt(request.Header.Get(headerXClientId), 10, 64)
+	clientId, err := strconv.ParseInt(request.Header.Get(headerXClientId), 10, 64)
 	if err != nil {
 		return 0
 	}
 
-	return callerId
+	return clientId
 }
 
 func GetUserId(request *http.Request) int64 {
