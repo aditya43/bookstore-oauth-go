@@ -12,3 +12,7 @@ func TestOauthConstants(t *testing.T) {
 	assert.EqualValues(t, "X-User-Id", headerXUserId)
 	assert.EqualValues(t, "access_token", paramAccessToken)
 }
+
+func TestIsPublicNilRequest(t *testing.T) {
+	assert.True(t, IsPublic(nil))
+}
